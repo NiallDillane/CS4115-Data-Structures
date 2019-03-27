@@ -1,0 +1,7 @@
+mtrans.cc:14:12: error: ‘std::sort’ has not been declared
+ using std::sort;
+            ^~~~
+mtrans.cc: In function ‘int main(int, char**)’:
+mtrans.cc:79:4: error: ‘stable_sort’ is not a member of ‘std’
+    std::stable_sort(valsTran.begin(), valsTran.end(), compare_entry);
+    ^~~
