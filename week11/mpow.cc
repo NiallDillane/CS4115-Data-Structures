@@ -74,6 +74,11 @@ int main(int argc, char *argv[])
       exit(0);
   }
   int pow = in;
+  if(pow < 0){
+      cout << "Power " << in << " is below 0." << endl;
+      exit(0);
+  }
+    
   
   int colct;
   sparseMat rows;
