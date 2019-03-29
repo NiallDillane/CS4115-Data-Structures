@@ -64,10 +64,16 @@ double epsilon = 0.0;
 
 int main(int argc, char *argv[])
 {
-  int pow = strtod(argv[1], 0);
-  if (!(floor(pow) == ceil(pow))){
-      cout << "Integer " << pow << " is not an integer." << endl;
+  if(argc !=2){
+    cout << "Incorrect input format" << endl;
+    exit(0);
   }
+  float in = strtof(argv[1], 0);
+  if (!(floor(in) == ceil(in))){
+      cout << "Power " << in << " is not an integer." << endl;
+      exit(0);
+  }
+  int pow = in;
   
   int colct;
   sparseMat rows;
