@@ -79,12 +79,12 @@ int main(int argc, char *argv[])
   sparseMat rows;
   readMat(rows, colct);
   
-  sparseMat prod;
-  for(int i=1; i<pow; i++){
-    multMat(rows, rows, prod);
-    rows=prod;
+  sparseMat prod1=rows, prod2;
+  for(int i=0; i<pow; i++){
+    multMat(rows, prod1, prod2);
+    prod1=prod2;
   }
-  outMat(prod);
+  outMat(prod2);
 }
 
 void readMat(sparseMat& rows, int& colct)
