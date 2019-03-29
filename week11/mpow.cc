@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
   readMat(rows, colct);
   
   sparseMat prod1=rows, prod2;
-  for(int i=0; i<pow; i++){
+  for(int i=1; i<pow; i++){
     multMat(rows, prod1, prod2);
     prod1=prod2;
   }
