@@ -60,7 +60,7 @@ void multMat(sparseMat&, sparseMat&, sparseMat&);
 double dotProd(const sparseRow&, const sparseRow&);
 void outMat(const sparseMat);
 
-double epsilon = 0.1;
+double epsilon = 0.0;
 
 int main(int argc, char *argv[])
 {
