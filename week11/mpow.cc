@@ -63,12 +63,12 @@ bool isInt(char *str){
 typedef list<nz> sparseRow;
 typedef vector<sparseRow> sparseMat;
 
-sparseMat logPower(sparseMat, int);
 void readMat(sparseMat&, int&);
 void powerZero(int&);
-void transpMat(const sparseMat, sparseMat);
-sparseMat multMat(sparseMat, sparseMat);
-double dotProd(const sparseRow, const sparseRow);
+sparseMat logPower(sparseMat&, int);
+void transpMat(const sparseMat, sparseMat&);
+sparseMat multMat(sparseMat&, sparseMat&);
+double dotProd(const sparseRow&, const sparseRow&);
 void outMat(const sparseMat);
 
 double epsilon = 0.0;
@@ -103,30 +103,10 @@ int main(int argc, char *argv[])
 
   if(pow == 0)
     powerZero(colct);
-  else if(pow == 1)
-    outMat(rows);
-  else{
-    /*sparseMat prod1=rows, prod2=rows;
-    for(int i=1; i<pow; i++){
-      multMat(rows, prod1, prod2);
-      prod1=prod2;
-    }
-    outMat(prod2);*/
+  else
     outMat(logPower(rows, pow));
-  }
 }
 
-sparseMat logPower(sparseMat rows, int pow){
-  sparseMat prod, prodT;
-  prod = logPower(rows, floor(pow/2));
-  if(pow % 2 == 0){
-    return multMat(prod, prod);
-  }
-  else{
-    prodT = multMat(prod, prod);
-    return multMat(prodT, rows);
-  }
-}
 
 void readMat(sparseMat& rows, int& colct)
 {
@@ -155,7 +135,23 @@ void powerZero(int& colct){
   }
 }
 
-void transpMat(const sparseMat rows, sparseMat transp)
+sparseMat logPower(sparseMat& rows, int pow){
+  sparseMat prod, prodT;
+  if(pow == 1)
+    return rows;
+  else{
+    prod = logPower(rows, floor(pow/2));
+    if(pow % 2 == 0){
+      return multMat(prod, prod);
+    }
+    else{
+      prodT = multMat(prod, prod);
+      return multMat(prodT, rows);
+    }
+  }
+}
+
+void transpMat(const sparseMat rows, sparseMat& transp)
 {
   for (unsigned int c = 0; c < rows.size(); c++)
   {
@@ -179,7 +175,7 @@ void transpMat(const sparseMat rows, sparseMat transp)
   }
 }
 
-sparseMat multMat(sparseMat m1, sparseMat m2)
+sparseMat multMat(sparseMat& m1, sparseMat& m2)
 {
   // remove every row of result, just in case anything there...
   // res.clear();
@@ -214,7 +210,7 @@ sparseMat multMat(sparseMat m1, sparseMat m2)
   return res;
 }
 
-double dotProd(const sparseRow r1, const sparseRow r2)
+double dotProd(const sparseRow& r1, const sparseRow& r2)
 {
   sparseRow::const_iterator it1 = r1.begin(), e1 = r1.end();
   sparseRow::const_iterator it2 = r2.begin(), e2 = r2.end();
