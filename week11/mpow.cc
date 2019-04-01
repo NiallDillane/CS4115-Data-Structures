@@ -51,13 +51,24 @@ ostream& operator<<(ostream &os,const nz& base)
   return os;
 }
 
+bool isInt(char *str){
+  while (*str != 0){
+    if (!isdigit(*str++)) {
+	return false;
+    }
+  }
+  return true;
+}
+
 typedef list<nz> sparseRow;
 typedef vector<sparseRow> sparseMat;
 
+sparseMat logPower(sparseMat, int);
 void readMat(sparseMat&, int&);
-void transpMat(const sparseMat, sparseMat&);
-void multMat(sparseMat&, sparseMat&, sparseMat&);
-double dotProd(const sparseRow&, const sparseRow&);
+void powerZero(int&);
+void transpMat(const sparseMat, sparseMat);
+sparseMat multMat(sparseMat, sparseMat);
+double dotProd(const sparseRow, const sparseRow);
 void outMat(const sparseMat);
 
 double epsilon = 0.0;
@@ -65,31 +76,56 @@ double epsilon = 0.0;
 int main(int argc, char *argv[])
 {
   if(argc !=2){
-    cout << "Incorrect input format" << endl;
+    cout << "Incorrect input format; exiting." << endl;
     exit(0);
   }
+
+  if(!isInt(argv[1])){
+    cout << "Input must be an integer; exiting." << endl;
+    exit(0);
+  }
+  
   float in = strtof(argv[1], 0);
   if (!(floor(in) == ceil(in))){
-      cout << "Power " << in << " is not an integer." << endl;
+      cout << "Input must be an integer; exiting." << endl;
       exit(0);
   }
+  
   int pow = in;
   if(pow < 0){
-      cout << "Power " << in << " is below 0." << endl;
+      cout << "Illegal exponent; exiting." << endl;
       exit(0);
   }
     
-  
   int colct;
   sparseMat rows;
   readMat(rows, colct);
-  
-  sparseMat prod1=rows, prod2;
-  for(int i=1; i<pow; i++){
-    multMat(rows, prod1, prod2);
-    prod1=prod2;
+
+  if(pow == 0)
+    powerZero(colct);
+  else if(pow == 1)
+    outMat(rows);
+  else{
+    /*sparseMat prod1=rows, prod2=rows;
+    for(int i=1; i<pow; i++){
+      multMat(rows, prod1, prod2);
+      prod1=prod2;
+    }
+    outMat(prod2);*/
+    outMat(logPower(rows, pow));
   }
-  outMat(prod2);
+}
+
+sparseMat logPower(sparseMat rows, int pow){
+  sparseMat prod, prodT;
+  prod = logPower(rows, floor(pow/2));
+  if(pow % 2 == 0){
+    return multMat(prod, prod);
+  }
+  else{
+    prodT = multMat(prod, prod);
+    return multMat(prodT, rows);
+  }
 }
 
 void readMat(sparseMat& rows, int& colct)
@@ -113,7 +149,13 @@ void readMat(sparseMat& rows, int& colct)
   }
 }
 
-void transpMat(const sparseMat rows, sparseMat& transp)
+void powerZero(int& colct){
+  for(int i = 0; i < colct; i++){
+    cout << (i+1) << " " << "1" << endl;
+  }
+}
+
+void transpMat(const sparseMat rows, sparseMat transp)
 {
   for (unsigned int c = 0; c < rows.size(); c++)
   {
@@ -137,10 +179,11 @@ void transpMat(const sparseMat rows, sparseMat& transp)
   }
 }
 
-void multMat(sparseMat& m1, sparseMat& m2, sparseMat& res)
+sparseMat multMat(sparseMat m1, sparseMat m2)
 {
   // remove every row of result, just in case anything there...
-  res.clear();
+  // res.clear();
+  sparseMat res;
 
   // initialise every row of result
   for (unsigned int c = 0; c < m1.size(); c++)
@@ -168,9 +211,10 @@ void multMat(sparseMat& m1, sparseMat& m2, sparseMat& res)
 	res[rind1-1].push_back(nz(rind2, val));
     }
   }
+  return res;
 }
 
-double dotProd(const sparseRow& r1, const sparseRow& r2)
+double dotProd(const sparseRow r1, const sparseRow r2)
 {
   sparseRow::const_iterator it1 = r1.begin(), e1 = r1.end();
   sparseRow::const_iterator it2 = r2.begin(), e2 = r2.end();
